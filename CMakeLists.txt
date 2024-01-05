@@ -206,12 +206,12 @@ if(NOT TRITON_CORE_HEADERS_ONLY)
   endif()
 
   include(FetchContent)
-  FetchContent_Declare(
-    repo-third-party
-    GIT_REPOSITORY https://github.com/triton-inference-server/third_party.git
-    GIT_TAG ${TRITON_THIRD_PARTY_REPO_TAG}
-  )
-  FetchContent_MakeAvailable(repo-third-party)
+  # FetchContent_Declare(
+  #   repo-third-party
+  #   GIT_REPOSITORY https://github.com/triton-inference-server/third_party.git
+  #   GIT_TAG ${TRITON_THIRD_PARTY_REPO_TAG}
+  # )
+  # FetchContent_MakeAvailable(repo-third-party)
 
   # Some libs are installed to ${TRITON_THIRD_PARTY_INSTALL_PREFIX}/{LIB}/lib64 instead
   # of ${TRITON_THIRD_PARTY_INSTALL_PREFIX}/{LIB}/lib on Centos
@@ -292,56 +292,56 @@ if(NOT TRITON_CORE_HEADERS_ONLY)
     set(TRITON_DEPENDS ${TRITON_DEPENDS} cnmem)
   endif() # TRITON_ENABLE_GPU
 
-  ExternalProject_Add(triton-core
-    PREFIX triton-core
-    SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/src"
-    BINARY_DIR "${CMAKE_CURRENT_BINARY_DIR}/triton-core"
-    CMAKE_CACHE_ARGS
-      -DProtobuf_DIR:PATH=${_FINDPACKAGE_PROTOBUF_CONFIG_DIR}
-      ${_CMAKE_ARGS_OPENSSL_ROOT_DIR}
-      ${_CMAKE_ARGS_CMAKE_TOOLCHAIN_FILE}
-      ${_CMAKE_ARGS_VCPKG_TARGET_TRIPLET}
-      -DGTEST_ROOT:PATH=${TRITON_THIRD_PARTY_INSTALL_PREFIX}/googletest
-      -DgRPC_DIR:PATH=${TRITON_THIRD_PARTY_INSTALL_PREFIX}/grpc/lib/cmake/grpc
-      -Dc-ares_DIR:PATH=${TRITON_THIRD_PARTY_INSTALL_PREFIX}/c-ares/${LIB_DIR}/cmake/c-ares
-      -Dabsl_DIR:PATH=${TRITON_THIRD_PARTY_INSTALL_PREFIX}/absl/${LIB_DIR}/cmake/absl
-      -Dre2_DIR:PATH=${TRITON_THIRD_PARTY_INSTALL_PREFIX}/re2/${LIB_DIR}/cmake/re2
-      -Dnlohmann_json_DIR:PATH=${TRITON_THIRD_PARTY_INSTALL_PREFIX}/nlohmann_json/${LIB_DIR}/cmake/nlohmann_json
-      -Dprometheus-cpp_DIR:PATH=${TRITON_THIRD_PARTY_INSTALL_PREFIX}/prometheus-cpp/${LIB_DIR}/cmake/prometheus-cpp
-      -Dgoogle_cloud_cpp_storage_DIR:PATH=${TRITON_THIRD_PARTY_INSTALL_PREFIX}/google-cloud-cpp/${LIB_DIR}/cmake/google_cloud_cpp_storage
-      -Dgoogle_cloud_cpp_rest_internal_DIR:PATH=${TRITON_THIRD_PARTY_INSTALL_PREFIX}/google-cloud-cpp/${LIB_DIR}/cmake/google_cloud_cpp_rest_internal
-      -Dgoogle_cloud_cpp_common_DIR:PATH=${TRITON_THIRD_PARTY_INSTALL_PREFIX}/google-cloud-cpp/${LIB_DIR}/cmake/google_cloud_cpp_common
-      ${TRITON_AZURE_STORAGE_PACKAGE_DIRS}
-      -DCrc32c_DIR:PATH=${TRITON_THIRD_PARTY_INSTALL_PREFIX}/crc32c/${LIB_DIR}/cmake/Crc32c
-      -DAWSSDK_DIR:PATH=${TRITON_THIRD_PARTY_INSTALL_PREFIX}/aws-sdk-cpp/${LIB_DIR}/cmake/AWSSDK
-      -Daws-cpp-sdk-core_DIR:PATH=${TRITON_THIRD_PARTY_INSTALL_PREFIX}/aws-sdk-cpp/${LIB_DIR}/cmake/aws-cpp-sdk-core
-      -Daws-cpp-sdk-s3_DIR:PATH=${TRITON_THIRD_PARTY_INSTALL_PREFIX}/aws-sdk-cpp/${LIB_DIR}/cmake/aws-cpp-sdk-s3
-      -Daws-c-event-stream_DIR:PATH=${TRITON_THIRD_PARTY_INSTALL_PREFIX}/aws-sdk-cpp/${LIB_DIR}/aws-c-event-stream/cmake
-      -Daws-c-common_DIR:PATH=${TRITON_THIRD_PARTY_INSTALL_PREFIX}/aws-sdk-cpp/${LIB_DIR}/aws-c-common/cmake
-      -Daws-checksums_DIR:PATH=${TRITON_THIRD_PARTY_INSTALL_PREFIX}/aws-sdk-cpp/${LIB_DIR}/aws-checksums/cmake
-      -DCMAKE_PREFIX_PATH:PATH=${CMAKE_PREFIX_PATH}
-      -DCNMEM_PATH:PATH=${TRITON_THIRD_PARTY_INSTALL_PREFIX}/cnmem
-      -DTRITON_COMMON_REPO_TAG:STRING=${TRITON_COMMON_REPO_TAG}
-      -DTRITON_EXTRA_LIB_PATHS:PATH=${TRITON_EXTRA_LIB_PATHS}
-      -DTRITON_ENABLE_NVTX:BOOL=${TRITON_ENABLE_NVTX}
-      -DTRITON_ENABLE_TRACING:BOOL=${TRITON_ENABLE_TRACING}
-      -DTRITON_ENABLE_LOGGING:BOOL=${TRITON_ENABLE_LOGGING}
-      -DTRITON_ENABLE_STATS:BOOL=${TRITON_ENABLE_STATS}
-      -DTRITON_ENABLE_GPU:BOOL=${TRITON_ENABLE_GPU}
-      -DTRITON_ENABLE_MALI_GPU:BOOL=${TRITON_ENABLE_MALI_GPU}
-      -DTRITON_MIN_COMPUTE_CAPABILITY:STRING=${TRITON_MIN_COMPUTE_CAPABILITY}
-      -DTRITON_ENABLE_METRICS:BOOL=${TRITON_ENABLE_METRICS}
-      -DTRITON_ENABLE_METRICS_GPU:BOOL=${TRITON_ENABLE_METRICS_GPU}
-      -DTRITON_ENABLE_METRICS_CPU:BOOL=${TRITON_ENABLE_METRICS_CPU}
-      -DTRITON_ENABLE_GCS:BOOL=${TRITON_ENABLE_GCS}
-      -DTRITON_ENABLE_AZURE_STORAGE:BOOL=${TRITON_ENABLE_AZURE_STORAGE}
-      -DTRITON_ENABLE_S3:BOOL=${TRITON_ENABLE_S3}
-      -DTRITON_ENABLE_ENSEMBLE:BOOL=${TRITON_ENABLE_ENSEMBLE}
-      -DCMAKE_BUILD_TYPE:STRING=${CMAKE_BUILD_TYPE}
-      -DCMAKE_INSTALL_PREFIX:PATH=${TRITON_INSTALL_PREFIX}
-      -DTRITON_VERSION:STRING=${TRITON_VERSION}
-    DEPENDS ${TRITON_DEPENDS}
-  )
+  # ExternalProject_Add(triton-core
+  #   PREFIX triton-core
+  #   SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/src"
+  #   BINARY_DIR "${CMAKE_CURRENT_BINARY_DIR}/triton-core"
+  #   CMAKE_CACHE_ARGS
+  #     -DProtobuf_DIR:PATH=${_FINDPACKAGE_PROTOBUF_CONFIG_DIR}
+  #     ${_CMAKE_ARGS_OPENSSL_ROOT_DIR}
+  #     ${_CMAKE_ARGS_CMAKE_TOOLCHAIN_FILE}
+  #     ${_CMAKE_ARGS_VCPKG_TARGET_TRIPLET}
+  #     -DGTEST_ROOT:PATH=${TRITON_THIRD_PARTY_INSTALL_PREFIX}/googletest
+  #     -DgRPC_DIR:PATH=${TRITON_THIRD_PARTY_INSTALL_PREFIX}/grpc/lib/cmake/grpc
+  #     -Dc-ares_DIR:PATH=${TRITON_THIRD_PARTY_INSTALL_PREFIX}/c-ares/${LIB_DIR}/cmake/c-ares
+  #     -Dabsl_DIR:PATH=${TRITON_THIRD_PARTY_INSTALL_PREFIX}/absl/${LIB_DIR}/cmake/absl
+  #     -Dre2_DIR:PATH=${TRITON_THIRD_PARTY_INSTALL_PREFIX}/re2/${LIB_DIR}/cmake/re2
+  #     -Dnlohmann_json_DIR:PATH=${TRITON_THIRD_PARTY_INSTALL_PREFIX}/nlohmann_json/${LIB_DIR}/cmake/nlohmann_json
+  #     -Dprometheus-cpp_DIR:PATH=${TRITON_THIRD_PARTY_INSTALL_PREFIX}/prometheus-cpp/${LIB_DIR}/cmake/prometheus-cpp
+  #     -Dgoogle_cloud_cpp_storage_DIR:PATH=${TRITON_THIRD_PARTY_INSTALL_PREFIX}/google-cloud-cpp/${LIB_DIR}/cmake/google_cloud_cpp_storage
+  #     -Dgoogle_cloud_cpp_rest_internal_DIR:PATH=${TRITON_THIRD_PARTY_INSTALL_PREFIX}/google-cloud-cpp/${LIB_DIR}/cmake/google_cloud_cpp_rest_internal
+  #     -Dgoogle_cloud_cpp_common_DIR:PATH=${TRITON_THIRD_PARTY_INSTALL_PREFIX}/google-cloud-cpp/${LIB_DIR}/cmake/google_cloud_cpp_common
+  #     ${TRITON_AZURE_STORAGE_PACKAGE_DIRS}
+  #     -DCrc32c_DIR:PATH=${TRITON_THIRD_PARTY_INSTALL_PREFIX}/crc32c/${LIB_DIR}/cmake/Crc32c
+  #     -DAWSSDK_DIR:PATH=${TRITON_THIRD_PARTY_INSTALL_PREFIX}/aws-sdk-cpp/${LIB_DIR}/cmake/AWSSDK
+  #     -Daws-cpp-sdk-core_DIR:PATH=${TRITON_THIRD_PARTY_INSTALL_PREFIX}/aws-sdk-cpp/${LIB_DIR}/cmake/aws-cpp-sdk-core
+  #     -Daws-cpp-sdk-s3_DIR:PATH=${TRITON_THIRD_PARTY_INSTALL_PREFIX}/aws-sdk-cpp/${LIB_DIR}/cmake/aws-cpp-sdk-s3
+  #     -Daws-c-event-stream_DIR:PATH=${TRITON_THIRD_PARTY_INSTALL_PREFIX}/aws-sdk-cpp/${LIB_DIR}/aws-c-event-stream/cmake
+  #     -Daws-c-common_DIR:PATH=${TRITON_THIRD_PARTY_INSTALL_PREFIX}/aws-sdk-cpp/${LIB_DIR}/aws-c-common/cmake
+  #     -Daws-checksums_DIR:PATH=${TRITON_THIRD_PARTY_INSTALL_PREFIX}/aws-sdk-cpp/${LIB_DIR}/aws-checksums/cmake
+  #     -DCMAKE_PREFIX_PATH:PATH=${CMAKE_PREFIX_PATH}
+  #     -DCNMEM_PATH:PATH=${TRITON_THIRD_PARTY_INSTALL_PREFIX}/cnmem
+  #     -DTRITON_COMMON_REPO_TAG:STRING=${TRITON_COMMON_REPO_TAG}
+  #     -DTRITON_EXTRA_LIB_PATHS:PATH=${TRITON_EXTRA_LIB_PATHS}
+  #     -DTRITON_ENABLE_NVTX:BOOL=${TRITON_ENABLE_NVTX}
+  #     -DTRITON_ENABLE_TRACING:BOOL=${TRITON_ENABLE_TRACING}
+  #     -DTRITON_ENABLE_LOGGING:BOOL=${TRITON_ENABLE_LOGGING}
+  #     -DTRITON_ENABLE_STATS:BOOL=${TRITON_ENABLE_STATS}
+  #     -DTRITON_ENABLE_GPU:BOOL=${TRITON_ENABLE_GPU}
+  #     -DTRITON_ENABLE_MALI_GPU:BOOL=${TRITON_ENABLE_MALI_GPU}
+  #     -DTRITON_MIN_COMPUTE_CAPABILITY:STRING=${TRITON_MIN_COMPUTE_CAPABILITY}
+  #     -DTRITON_ENABLE_METRICS:BOOL=${TRITON_ENABLE_METRICS}
+  #     -DTRITON_ENABLE_METRICS_GPU:BOOL=${TRITON_ENABLE_METRICS_GPU}
+  #     -DTRITON_ENABLE_METRICS_CPU:BOOL=${TRITON_ENABLE_METRICS_CPU}
+  #     -DTRITON_ENABLE_GCS:BOOL=${TRITON_ENABLE_GCS}
+  #     -DTRITON_ENABLE_AZURE_STORAGE:BOOL=${TRITON_ENABLE_AZURE_STORAGE}
+  #     -DTRITON_ENABLE_S3:BOOL=${TRITON_ENABLE_S3}
+  #     -DTRITON_ENABLE_ENSEMBLE:BOOL=${TRITON_ENABLE_ENSEMBLE}
+  #     -DCMAKE_BUILD_TYPE:STRING=${CMAKE_BUILD_TYPE}
+  #     -DCMAKE_INSTALL_PREFIX:PATH=${TRITON_INSTALL_PREFIX}
+  #     -DTRITON_VERSION:STRING=${TRITON_VERSION}
+  #   DEPENDS ${TRITON_DEPENDS}
+  # )
 endif() # NOT TRITON_CORE_HEADERS_ONLY
 
 #
