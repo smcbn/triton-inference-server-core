@@ -901,7 +901,7 @@ class InferenceRequest {
   // not.
   bool null_request_;
 
-  // Names of shared memory regions used by InferenceRequest
+  // Set of shared memory region names used by InferenceRequest
   std::set<std::string> ref_shm_regions_;
 
   // Response factory arguments
