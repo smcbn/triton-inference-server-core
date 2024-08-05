@@ -760,6 +760,22 @@ class InferenceRequest {
     return is_cancelled;
   }
 
+  // Add the shm_region name to the set
+  // If the name is added successfully, set is_added to true
+  // if the name already exists, set is_added to false
+  Status AddRefShmRegion(const std::string& region_name, bool* is_added)
+  {
+    auto it = ref_shm_regions_.insert(region_name);
+    *is_added = it.second;
+    return Status::Success;
+  }
+
+  const std::set<std::string>& GetRefShmRegions() const
+  {
+    return ref_shm_regions_;
+  }
+
+
  private:
   DISALLOW_COPY_AND_ASSIGN(InferenceRequest);
   friend std::ostream& operator<<(
@@ -884,6 +900,9 @@ class InferenceRequest {
   // Whether this is a null request used for direct sequence batch padding or
   // not.
   bool null_request_;
+
+  // Names of shared memory regions used by InferenceRequest
+  std::set<std::string> ref_shm_regions_;
 
   // Response factory arguments
   const ResponseAllocator* response_allocator_;
