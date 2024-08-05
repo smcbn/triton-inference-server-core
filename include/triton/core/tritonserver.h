@@ -1489,7 +1489,7 @@ TRITONSERVER_InferenceRequestSetDoubleParameter(
 /// \param region_name The name of the shm region.
 /// \param is_added Returns true if region_name added, false otherwise.
 /// \return a TRITONSERVER_Error indicating success or failure.
-TRITONAPI_DECLSPEC TRITONSERVER_Error*
+TRITONSERVER_DECLSPEC struct TRITONSERVER_Error*
 TRITONSERVER_InferenceRequestAddRefShmRegion(
     TRITONSERVER_InferenceRequest* request, const char* region_name,
     bool* is_added);
