@@ -754,6 +754,12 @@ TRITONAPI_DECLSPEC void
 TRITONSERVER_InferenceRequestSetDoubleParameter()
 {
 }
+
+TRITONAPI_DECLSPEC void
+TRITONSERVER_InferenceRequestAddRefShmRegion()
+{
+}
+
 TRITONAPI_DECLSPEC void
 TRITONSERVER_InferenceRequestSetIntParameter()
 {
