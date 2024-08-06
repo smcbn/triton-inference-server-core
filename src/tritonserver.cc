@@ -2133,14 +2133,12 @@ TRITONSERVER_InferenceRequestSetDoubleParameter(
   return nullptr;  // success
 }
 
-TRITONSERVER_DECLSPEC struct TRITONSERVER_Error*
+TRITONAPI_DECLSPEC TRITONSERVER_Error*
 TRITONSERVER_InferenceRequestAddRefShmRegion(
-    struct TRITONSERVER_InferenceRequest* inference_request,
-    const char* region_name, bool* is_added)
+    TRITONSERVER_InferenceRequest* request, const char* name, bool* is_added)
 {
-  tc::InferenceRequest* lrequest =
-      reinterpret_cast<tc::InferenceRequest*>(inference_request);
-  RETURN_IF_STATUS_ERROR(lrequest->AddRefShmRegion(region_name, is_added));
+  tc::InferenceRequest* tr = reinterpret_cast<tc::InferenceRequest*>(request);
+  RETURN_IF_STATUS_ERROR(tr->AddRefShmRegion(name, is_added));
   return nullptr;  // success
 }
 

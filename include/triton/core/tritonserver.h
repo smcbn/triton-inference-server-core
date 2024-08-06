@@ -1491,8 +1491,8 @@ TRITONSERVER_InferenceRequestSetDoubleParameter(
 /// \return a TRITONSERVER_Error indicating success or failure.
 TRITONSERVER_DECLSPEC struct TRITONSERVER_Error*
 TRITONSERVER_InferenceRequestAddRefShmRegion(
-    struct TRITONSERVER_InferenceRequest* inference_request,
-    const char* region_name, bool* is_added);
+    struct TRITONSERVER_InferenceRequest* request, const char* name,
+    bool* is_added);
 
 
 /// TRITONSERVER_InferenceResponse
