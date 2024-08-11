@@ -1494,6 +1494,16 @@ TRITONSERVER_InferenceRequestAddRefShmRegion(
     struct TRITONSERVER_InferenceRequest* request, const char* name,
     bool* is_added);
 
+/// Get shm region names referred by request.
+///
+/// \param request The request.
+/// \param ref_shm_regions Returns set of shm region names.
+/// \return a TRITONSERVER_Error indicating success or failure.
+TRITONSERVER_DECLSPEC struct TRITONSERVER_Error*
+TRITONSERVER_InferenceRequestGetRefShmRegions(
+    TRITONSERVER_InferenceRequest* request,
+    const std::set<std::string>** ref_shm_regions);
+
 
 /// TRITONSERVER_InferenceResponse
 ///

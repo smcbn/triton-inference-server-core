@@ -2142,6 +2142,20 @@ TRITONSERVER_InferenceRequestAddRefShmRegion(
   return nullptr;  // success
 }
 
+TRITONAPI_DECLSPEC TRITONSERVER_Error*
+TRITONSERVER_InferenceRequestGetRefShmRegions(
+    TRITONSERVER_InferenceRequest* request,
+    const std::set<std::string>** ref_shm_regions)
+{
+  tc::InferenceRequest* tr = reinterpret_cast<tc::InferenceRequest*>(request);
+  if (*ref_shm_regions) {
+    return TRITONSERVER_ErrorNew(
+        TRITONSERVER_ERROR_INTERNAL, "null pointer received");
+  }
+  *ref_shm_regions = tr->GetRefShmRegions();
+  return nullptr;  // Success
+}
+
 //
 // TRITONSERVER_InferenceResponse
 //
