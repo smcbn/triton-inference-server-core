@@ -2149,7 +2149,7 @@ TRITONSERVER_InferenceRequestGetInputRefShmRegions(
 {
   if (input_ref_shm_regions == nullptr) {
     return TRITONSERVER_ErrorNew(
-        TRITONSERVER_ERROR_INTERNAL, "null pointer received");
+        TRITONSERVER_ERROR_INTERNAL, "Received nullptr");
   }
 
   tc::InferenceRequest* tr = reinterpret_cast<tc::InferenceRequest*>(request);
@@ -2175,7 +2175,7 @@ TRITONSERVER_InferenceRequestGetOutputRefShmRegions(
 {
   if (output_ref_shm_regions == nullptr) {
     return TRITONSERVER_ErrorNew(
-        TRITONSERVER_ERROR_INTERNAL, "null pointer received");
+        TRITONSERVER_ERROR_INTERNAL, "Received nullptr");
   }
 
   tc::InferenceRequest* tr = reinterpret_cast<tc::InferenceRequest*>(request);
