@@ -2147,7 +2147,7 @@ TRITONSERVER_InferenceRequestGetInputRefShmRegions(
     TRITONSERVER_InferenceRequest* request,
     const std::set<std::string>** input_ref_shm_regions)
 {
-  if (input_ref_shm_regions == nullptr) {
+  if (input_ref_shm_regions == nullptr || request == nullptr) {
     return TRITONSERVER_ErrorNew(
         TRITONSERVER_ERROR_INTERNAL, "Received nullptr");
   }
@@ -2173,7 +2173,7 @@ TRITONSERVER_InferenceRequestGetOutputRefShmRegions(
     TRITONSERVER_InferenceRequest* request,
     const std::set<std::string>** output_ref_shm_regions)
 {
-  if (output_ref_shm_regions == nullptr) {
+  if (output_ref_shm_regions == nullptr || request == nullptr) {
     return TRITONSERVER_ErrorNew(
         TRITONSERVER_ERROR_INTERNAL, "Received nullptr");
   }
