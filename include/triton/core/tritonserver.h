@@ -1493,7 +1493,7 @@ TRITONSERVER_InferenceRequestSetDoubleParameter(
 /// \param is_added Returns true if region_name added, false otherwise.
 /// \return a TRITONSERVER_Error indicating success or failure.
 TRITONSERVER_DECLSPEC struct TRITONSERVER_Error*
-TRITONSERVER_InferenceRequestAddInputRefShmRegion(
+TRITONSERVER_InferenceRequestAddRefShmRegion(
     struct TRITONSERVER_InferenceRequest* request, const char* name,
     bool* is_added);
 
@@ -1503,31 +1503,9 @@ TRITONSERVER_InferenceRequestAddInputRefShmRegion(
 /// \param ref_shm_regions Returns set of shm region names.
 /// \return a TRITONSERVER_Error indicating success or failure.
 TRITONSERVER_DECLSPEC struct TRITONSERVER_Error*
-TRITONSERVER_InferenceRequestGetInputRefShmRegions(
+TRITONSERVER_InferenceRequestGetRefShmRegions(
     TRITONSERVER_InferenceRequest* request,
     const std::set<std::string>** input_ref_shm_regions);
-
-/// Add shm region name to the request.
-///
-/// \param request The request.
-/// \param region_name The name of the shm region.
-/// \param is_added Returns true if region_name added, false otherwise.
-/// \return a TRITONSERVER_Error indicating success or failure.
-TRITONSERVER_DECLSPEC struct TRITONSERVER_Error*
-TRITONSERVER_InferenceRequestAddOutputRefShmRegion(
-    struct TRITONSERVER_InferenceRequest* request, const char* name,
-    bool* is_added);
-
-/// Get shm region names referred by request.
-///
-/// \param request The request.
-/// \param ref_shm_regions Returns set of shm region names.
-/// \return a TRITONSERVER_Error indicating success or failure.
-TRITONSERVER_DECLSPEC struct TRITONSERVER_Error*
-TRITONSERVER_InferenceRequestGetOutputRefShmRegions(
-    TRITONSERVER_InferenceRequest* request,
-    const std::set<std::string>** output_ref_shm_regions);
-
 
 /// TRITONSERVER_InferenceResponse
 ///

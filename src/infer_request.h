@@ -760,31 +760,19 @@ class InferenceRequest {
     return is_cancelled;
   }
 
-  // Add the shm_region name to the set
+  // Add the shm_region name to the ref_shm_regions_
   // If the name is added successfully, set is_added to true
   // if the name already exists, set is_added to false
-  Status AddInputRefShmRegion(const std::string& region_name, bool* is_added)
+  Status AddRefShmRegion(const std::string& region_name, bool* is_added)
   {
-    auto it = input_ref_shm_regions_.insert(region_name);
+    auto it = ref_shm_regions_.insert(region_name);
     *is_added = it.second;
     return Status::Success;
   }
 
-  const std::set<std::string>& GetInputRefShmRegions() const
+  const std::set<std::string>& GetRefShmRegions() const
   {
-    return input_ref_shm_regions_;
-  }
-
-  Status AddOutputRefShmRegion(const std::string& region_name, bool* is_added)
-  {
-    auto it = output_ref_shm_regions_.insert(region_name);
-    *is_added = it.second;
-    return Status::Success;
-  }
-
-  const std::set<std::string>& GetOutputRefShmRegions() const
-  {
-    return output_ref_shm_regions_;
+    return ref_shm_regions_;
   }
 
  private:
@@ -913,8 +901,7 @@ class InferenceRequest {
   bool null_request_;
 
   // Set of shared memory region names used by InferenceRequest
-  std::set<std::string> input_ref_shm_regions_;
-  std::set<std::string> output_ref_shm_regions_;
+  std::set<std::string> ref_shm_regions_;
 
   // Response factory arguments
   const ResponseAllocator* response_allocator_;

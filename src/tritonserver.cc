@@ -2134,53 +2134,27 @@ TRITONSERVER_InferenceRequestSetDoubleParameter(
 }
 
 TRITONAPI_DECLSPEC TRITONSERVER_Error*
-TRITONSERVER_InferenceRequestAddInputRefShmRegion(
+TRITONSERVER_InferenceRequestAddRefShmRegion(
     TRITONSERVER_InferenceRequest* request, const char* name, bool* is_added)
 {
   tc::InferenceRequest* tr = reinterpret_cast<tc::InferenceRequest*>(request);
-  RETURN_IF_STATUS_ERROR(tr->AddInputRefShmRegion(name, is_added));
+  RETURN_IF_STATUS_ERROR(tr->AddRefShmRegion(name, is_added));
   return nullptr;  // success
 }
 
 TRITONAPI_DECLSPEC TRITONSERVER_Error*
-TRITONSERVER_InferenceRequestGetInputRefShmRegions(
+TRITONSERVER_InferenceRequestGetRefShmRegions(
     TRITONSERVER_InferenceRequest* request,
-    const std::set<std::string>** input_ref_shm_regions)
+    const std::set<std::string>** ref_shm_regions)
 {
-  if (input_ref_shm_regions == nullptr || request == nullptr) {
+  if (ref_shm_regions == nullptr || request == nullptr) {
     return TRITONSERVER_ErrorNew(
         TRITONSERVER_ERROR_INTERNAL, "Received nullptr");
   }
 
   tc::InferenceRequest* tr = reinterpret_cast<tc::InferenceRequest*>(request);
-  const std::set<std::string>& regions = tr->GetInputRefShmRegions();
-  *input_ref_shm_regions = &regions;
-
-  return nullptr;  // Success
-}
-
-TRITONAPI_DECLSPEC TRITONSERVER_Error*
-TRITONSERVER_InferenceRequestAddOutputRefShmRegion(
-    TRITONSERVER_InferenceRequest* request, const char* name, bool* is_added)
-{
-  tc::InferenceRequest* tr = reinterpret_cast<tc::InferenceRequest*>(request);
-  RETURN_IF_STATUS_ERROR(tr->AddOutputRefShmRegion(name, is_added));
-  return nullptr;  // success
-}
-
-TRITONAPI_DECLSPEC TRITONSERVER_Error*
-TRITONSERVER_InferenceRequestGetOutputRefShmRegions(
-    TRITONSERVER_InferenceRequest* request,
-    const std::set<std::string>** output_ref_shm_regions)
-{
-  if (output_ref_shm_regions == nullptr || request == nullptr) {
-    return TRITONSERVER_ErrorNew(
-        TRITONSERVER_ERROR_INTERNAL, "Received nullptr");
-  }
-
-  tc::InferenceRequest* tr = reinterpret_cast<tc::InferenceRequest*>(request);
-  const std::set<std::string>& regions = tr->GetOutputRefShmRegions();
-  *output_ref_shm_regions = &regions;
+  const std::set<std::string>& regions = tr->GetRefShmRegions();
+  *ref_shm_regions = &regions;
 
   return nullptr;  // Success
 }
