@@ -1084,6 +1084,26 @@ TRITONSERVER_MetricFamilyDelete()
 }
 
 TRITONAPI_DECLSPEC void
+TRITONSERVER_GetMetricFamilyKind()
+{
+}
+
+TRITONAPI_DECLSPEC void
+TRITONSERVER_MetricArgsNew()
+{
+}
+
+TRITONAPI_DECLSPEC void
+TRITONSERVER_MetricArgsSetHistogram()
+{
+}
+
+TRITONAPI_DECLSPEC void
+TRITONSERVER_MetricArgsDelete()
+{
+}
+
+TRITONAPI_DECLSPEC void
 TRITONSERVER_MetricNew()
 {
 }
