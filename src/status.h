@@ -37,17 +37,17 @@ class Status : public triton::common::Error {
  public:
   // Construct a status from a code with no message.
   explicit Status(Code code = Code::SUCCESS) : Error(code) {
-    LOG_VERBOSE(1) << "Status::Status() " << code << std::endl;
+    LOG_VERBOSE(1) << "Status::Status() failed with error " << std::endl;
   }
 
   // Construct a status from a code and message.
   explicit Status(Code code, const std::string& msg) : Error(code, msg) {
-    LOG_VERBOSE(1) << "Status::Status() " << code << " msg " << msg << std::endl;
+    LOG_VERBOSE(1) << "Status::Status() msg " << msg << std::endl;
   }
 
   // Construct a status from a code and message.
   explicit Status(const Error& error) : Error(error) {
-    LOG_VERBOSE(1) << "Status::Status() " << error << error.Message() << std::endl;
+    LOG_VERBOSE(1) << "Status::Status() error " << error.Message() << std::endl;
   }
 
   // Convenience "success" value. Can be used as Error::Success to
