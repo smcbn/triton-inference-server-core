@@ -432,7 +432,7 @@ InferenceServer::IsReady(bool* ready)
     const auto model_versions = model_repository_manager_->ModelStates();
 
     for (const auto& mv : model_versions) {
-      LOG_VERBOSE(1) << "InferenceServer::IsReady checking " << mv << " first = " << mv.first << " second " << mv.second << std::endl;
+      LOG_VERBOSE(1) << "InferenceServer::IsReady checking key = " << mv.first << " value size " << mv.second.size() << std::endl;
 
       // If a model status is present but no version status,
       // the model is not ready as there is no proper version to be served
@@ -441,6 +441,7 @@ InferenceServer::IsReady(bool* ready)
         goto strict_done;
       }
       for (const auto& vs : mv.second) {
+        LOG_VERBOSE(1) << "InferenceServer::IsReady VersionStateMap key = " << vs.first << " state " << ModelReadyStateString(vs.second.first) << " str = " << vs.second.second << std::endl;
         // Okay if model is not ready due to unload
         if ((vs.second.first != ModelReadyState::READY) &&
             (vs.second.second != "unloaded")) {
