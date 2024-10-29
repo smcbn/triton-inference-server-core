@@ -2624,7 +2624,7 @@ TRITONSERVER_ServerModelIsReady(
   tc::InferenceServer* lserver = reinterpret_cast<tc::InferenceServer*>(server);
 
   LOG_VERBOSE(1) << "TRITONSERVER_ServerModelIsReady " << model_name << " - " << model_version << " - " << std::endl;
-  tc::Status status = lserver->ModelIsReady(model_name, model_version, ready)
+  tc::Status status = lserver->ModelIsReady(model_name, model_version, ready);
   const bool& isReady = *ready;
   LOG_VERBOSE(1) << "TRITONSERVER_ServerModelIsReady ready = " << isReady << " Message: " << status.Message() << std::endl;
 
