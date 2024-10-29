@@ -414,11 +414,13 @@ Status
 InferenceServer::IsReady(bool* ready)
 {
   *ready = false;
-  LOG_VERBOSE(1) << "InferenceServer::IsReady ready_state_ = " << ready_state_ << std::endl;
+  LOG_VERBOSE(1) << "InferenceServer::IsReady1" << std::endl;
 
   if (ready_state_ == ServerReadyState::SERVER_EXITING) {
+    
     return Status(Status::Code::UNAVAILABLE, "Server exiting");
   }
+  LOG_VERBOSE(1) << "InferenceServer::IsReady not exiting" << std::endl;
 
   ScopedAtomicIncrement inflight(inflight_request_counter_);
 
@@ -426,7 +428,7 @@ InferenceServer::IsReady(bool* ready)
   // Additionally can report ready only when all models are ready.
   *ready = (ready_state_ == ServerReadyState::SERVER_READY);
   if (*ready && strict_readiness_) {
-    LOG_VERBOSE(1) << "InferenceServer::IsReady SERVER_READY" << std::endl;
+    LOG_VERBOSE(1) << "InferenceServer::IsReady SERVER_READY2" << std::endl;
     // Strict readiness... get the model status and make sure all
     // models are ready.
     const auto model_versions = model_repository_manager_->ModelStates();
