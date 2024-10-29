@@ -314,6 +314,9 @@ ModelLifeCycle::ModelState(
     }
   }
 
+  LOG_VERBOSE(1) << "ModelLifeCycle::ModelState NOT FOUND failed for model '"
+                 << model_id.str() << "', version " << std::to_string(model_version) << std::endl;
+
   return Status(
       Status::Code::NOT_FOUND, "model '" + model_id.str() + "', version " +
                                    std::to_string(model_version) +

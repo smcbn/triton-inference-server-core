@@ -40,6 +40,7 @@
 #include <aws/s3/model/HeadObjectRequest.h>
 #include <aws/s3/model/ListObjectsV2Request.h>
 #include <aws/s3/model/ListObjectsV2Result.h>
+#include "triton/common/logging.h"
 
 namespace triton { namespace core {
 
@@ -278,6 +279,7 @@ S3FileSystem::S3FileSystem(
 {
   // init aws api if not already
   Aws::SDKOptions options;
+  options.loggingOptions.logLevel = Aws::Utils::Logging::LogLevel::Trace
   static std::once_flag onceFlag;
   std::call_once(onceFlag, [&options] { Aws::InitAPI(options); });
 
@@ -336,6 +338,8 @@ S3FileSystem::S3FileSystem(
 Status
 S3FileSystem::CheckClient(const std::string& s3_path)
 {
+  
+  LOG_VERBOSE(1) << "S3FileSystem::CheckClient " << s3_path << std::endl;
   std::string bucket, object_path;
   RETURN_IF_ERROR(ParsePath(s3_path, &bucket, &object_path));
   // check if can connect to the bucket
@@ -344,18 +348,21 @@ S3FileSystem::CheckClient(const std::string& s3_path)
   auto head_object_outcome = client_->HeadBucket(head_request);
   if (!head_object_outcome.IsSuccess()) {
     auto err = head_object_outcome.GetError();
+    LOG_VERBOSE(1) << "S3FileSystem::CheckClient Unable to create S3 filesystem client" << std::endl;
     return Status(
         Status::Code::INTERNAL,
         "Unable to create S3 filesystem client. Check account credentials. "
         "Exception: '" +
             err.GetExceptionName() + "' Message: '" + err.GetMessage() + "'");
   }
+  LOG_VERBOSE(1) << "S3FileSystem::CheckClient ok" << std::endl;
   return Status::Success;
 }
 
 Status
 S3FileSystem::FileExists(const std::string& path, bool* exists)
 {
+  LOG_VERBOSE(1) << "S3FileSystem::FileExists path: " << path << std::endl;
   *exists = false;
 
   // S3 doesn't make objects for directories, so it could still be a directory
@@ -363,6 +370,7 @@ S3FileSystem::FileExists(const std::string& path, bool* exists)
   RETURN_IF_ERROR(IsDirectory(path, &is_dir));
   if (is_dir) {
     *exists = is_dir;
+    LOG_VERBOSE(1) << "S3FileSystem::FileExists ok 1" << std::endl;
     return Status::Success;
   }
 
@@ -378,6 +386,7 @@ S3FileSystem::FileExists(const std::string& path, bool* exists)
   if (!head_object_outcome.IsSuccess()) {
     if (head_object_outcome.GetError().GetErrorType() !=
         s3::S3Errors::RESOURCE_NOT_FOUND) {
+      LOG_VERBOSE(1) << "S3FileSystem::FileExists NOT ok 1 Could not get MetaData for object at " << path << " due to exception: " << head_object_outcome.GetError().GetExceptionName() << ", error message: " << head_object_outcome.GetError().GetMessage() << std::endl;
       return Status(
           Status::Code::INTERNAL,
           "Could not get MetaData for object at " + path +
@@ -389,13 +398,14 @@ S3FileSystem::FileExists(const std::string& path, bool* exists)
   } else {
     *exists = true;
   }
-
+  LOG_VERBOSE(1) << "S3FileSystem::FileExists ok 2" << std::endl;
   return Status::Success;
 }
 
 Status
 S3FileSystem::IsDirectory(const std::string& path, bool* is_dir)
 {
+  LOG_VERBOSE(1) << "S3FileSystem::IsDirectory path: " << path << std::endl;
   *is_dir = false;
   std::string bucket, object_path;
   RETURN_IF_ERROR(ParsePath(path, &bucket, &object_path));
@@ -406,6 +416,8 @@ S3FileSystem::IsDirectory(const std::string& path, bool* is_dir)
 
   auto head_bucket_outcome = client_->HeadBucket(head_request);
   if (!head_bucket_outcome.IsSuccess()) {
+    LOG_VERBOSE(1) << "S3FileSystem::IsDirectory NOT ok1 Could not get MetaData for bucket with name " << bucket << " due to exception: " << head_bucket_outcome.GetError().GetExceptionName() << ", error message: " << head_bucket_outcome.GetError().GetMessage() << std::endl;
+
     return Status(
         Status::Code::INTERNAL,
         "Could not get MetaData for bucket with name " + bucket +
@@ -417,6 +429,7 @@ S3FileSystem::IsDirectory(const std::string& path, bool* is_dir)
   // Root case - bucket exists and object path is empty
   if (object_path.empty()) {
     *is_dir = true;
+    LOG_VERBOSE(1) << "S3FileSystem::IsDirectory ok 1 bucket exists and object path is empty " << path << std::endl;
     return Status::Success;
   }
 
@@ -429,23 +442,29 @@ S3FileSystem::IsDirectory(const std::string& path, bool* is_dir)
   if (list_objects_outcome.IsSuccess()) {
     *is_dir = !list_objects_outcome.GetResult().GetContents().empty();
   } else {
+    LOG_VERBOSE(1) << "S3FileSystem::IsDirectory NOT ok 2 Failed to list objects with prefix " << path << " due to exception: " <<
+            list_objects_outcome.GetError().GetExceptionName() <<
+            ", error message: " << list_objects_outcome.GetError().GetMessage() << std::endl;
     return Status(
         Status::Code::INTERNAL,
         "Failed to list objects with prefix " + path + " due to exception: " +
             list_objects_outcome.GetError().GetExceptionName() +
             ", error message: " + list_objects_outcome.GetError().GetMessage());
   }
+  LOG_VERBOSE(1) << "S3FileSystem::IsDirectory ok 2" << path << std::endl;
   return Status::Success;
 }
 
 Status
 S3FileSystem::FileModificationTime(const std::string& path, int64_t* mtime_ns)
 {
+  LOG_VERBOSE(1) << "S3FileSystem::FileModificationTime path" << path << std::endl;
   // We don't need to worry about the case when this is a directory
   bool is_dir;
   RETURN_IF_ERROR(IsDirectory(path, &is_dir));
   if (is_dir) {
     *mtime_ns = 0;
+    LOG_VERBOSE(1) << "S3FileSystem::FileModificationTime ok 1" << path << " mtime_ns = " << mtime_ns << std::endl;
     return Status::Success;
   }
 
@@ -463,6 +482,11 @@ S3FileSystem::FileModificationTime(const std::string& path, int64_t* mtime_ns)
     *mtime_ns = head_object_outcome.GetResult().GetLastModified().Millis() *
                 NANOS_PER_MILLIS;
   } else {
+    LOG_VERBOSE(1) << "S3FileSystem::FileModificationTime NOT ok 1 Failed to get modification time for object at " << path <<
+            " due to exception: " <<
+            head_object_outcome.GetError().GetExceptionName() <<
+            ", error message: " << head_object_outcome.GetError().GetMessage() << std::endl;
+
     return Status(
         Status::Code::INTERNAL,
         "Failed to get modification time for object at " + path +
@@ -470,6 +494,7 @@ S3FileSystem::FileModificationTime(const std::string& path, int64_t* mtime_ns)
             head_object_outcome.GetError().GetExceptionName() +
             ", error message: " + head_object_outcome.GetError().GetMessage());
   }
+  LOG_VERBOSE(1) << "S3FileSystem::FileModificationTime ok 2" << path << " mtime_ns = " << mtime_ns << std::endl;
   return Status::Success;
 }
 
@@ -477,6 +502,7 @@ Status
 S3FileSystem::GetDirectoryContents(
     const std::string& path, std::set<std::string>* contents)
 {
+  LOG_VERBOSE(1) << "S3FileSystem::GetDirectoryContents path" << path << std::endl;
   // Parse bucket and dir_path
   std::string bucket, dir_path, full_dir;
   RETURN_IF_ERROR(ParsePath(path, &bucket, &dir_path));
@@ -495,6 +521,11 @@ S3FileSystem::GetDirectoryContents(
     auto list_objects_outcome = client_->ListObjectsV2(objects_request);
 
     if (!list_objects_outcome.IsSuccess()) {
+      LOG_VERBOSE(1) << "S3FileSystem::GetDirectoryContents NOT ok 1 Could not list contents of directory at " << true_path <<
+              " due to exception: " <<
+              list_objects_outcome.GetError().GetExceptionName() <<
+              ", error message: " <<
+              list_objects_outcome.GetError().GetMessage() << std::endl;
       return Status(
           Status::Code::INTERNAL,
           "Could not list contents of directory at " + true_path +
@@ -523,6 +554,7 @@ S3FileSystem::GetDirectoryContents(
 
       // Fail-safe check to ensure the item name is not empty
       if (item.empty()) {
+        LOG_VERBOSE(1) << "S3FileSystem::GetDirectoryContents not ok 2 Cannot handle item with empty name at " << true_path << std::endl;
         return Status(
             Status::Code::INTERNAL,
             "Cannot handle item with empty name at " + true_path);
@@ -536,6 +568,7 @@ S3FileSystem::GetDirectoryContents(
       done_listing = true;
     }
   }
+  LOG_VERBOSE(1) << "S3FileSystem::GetDirectoryContents ok 1 " << true_path << " : " << contents << std::endl;
   return Status::Success;
 }
 
@@ -543,6 +576,8 @@ Status
 S3FileSystem::GetDirectorySubdirs(
     const std::string& path, std::set<std::string>* subdirs)
 {
+  LOG_VERBOSE(1) << "S3FileSystem::GetDirectorySubdirs path" << path << std::endl;
+
   // Parse bucket and dir_path
   std::string bucket, dir_path;
   RETURN_IF_ERROR(ParsePath(path, &bucket, &dir_path));
@@ -560,6 +595,7 @@ S3FileSystem::GetDirectorySubdirs(
       ++iter;
     }
   }
+  LOG_VERBOSE(1) << "S3FileSystem::GetDirectorySubdirs path" << path << " : " << subdirs << std::endl;
 
   return Status::Success;
 }
@@ -567,6 +603,7 @@ Status
 S3FileSystem::GetDirectoryFiles(
     const std::string& path, std::set<std::string>* files)
 {
+  LOG_VERBOSE(1) << "S3FileSystem::GetDirectoryFiles path" << path << std::endl;
   // Parse bucket and dir_path
   std::string bucket, dir_path;
   RETURN_IF_ERROR(ParsePath(path, &bucket, &dir_path));
@@ -583,6 +620,7 @@ S3FileSystem::GetDirectoryFiles(
       ++iter;
     }
   }
+  LOG_VERBOSE(1) << "S3FileSystem::GetDirectoryFiles path" << path << " : " << files << std::endl;
 
   return Status::Success;
 }
@@ -590,6 +628,7 @@ S3FileSystem::GetDirectoryFiles(
 Status
 S3FileSystem::ReadTextFile(const std::string& path, std::string* contents)
 {
+  LOG_VERBOSE(1) << "S3FileSystem::ReadTextFile path" << path << std::endl;
   bool exists;
   RETURN_IF_ERROR(FileExists(path, &exists));
 
@@ -617,6 +656,9 @@ S3FileSystem::ReadTextFile(const std::string& path, std::string* contents)
 
     *contents = data;
   } else {
+     LOG_VERBOSE(1) << "S3FileSystem::ReadTextFile NOT ok 1 Failed to get object at " << path << " due to exception: " << 
+            get_object_outcome.GetError().GetExceptionName() << 
+            ", error message: " + get_object_outcome.GetError().GetMessage() << std::endl;
     return Status(
         Status::Code::INTERNAL,
         "Failed to get object at " + path + " due to exception: " +
@@ -624,6 +666,7 @@ S3FileSystem::ReadTextFile(const std::string& path, std::string* contents)
             ", error message: " + get_object_outcome.GetError().GetMessage());
   }
 
+  LOG_VERBOSE(1) << "S3FileSystem::ReadTextFile path OK " << path << std::endl;
   return Status::Success;
 }
 
@@ -631,10 +674,12 @@ Status
 S3FileSystem::LocalizePath(
     const std::string& path, std::shared_ptr<LocalizedPath>* localized)
 {
+  LOG_VERBOSE(1) << "S3FileSystem::LocalizePath path " << path << std::endl;
   // Check if the directory or file exists
   bool exists;
   RETURN_IF_ERROR(FileExists(path, &exists));
   if (!exists) {
+    LOG_VERBOSE(1) << "S3FileSystem::LocalizePath NOT ok 1 path directory or file does not exist at " << path << std::endl;
     return Status(
         Status::Code::INTERNAL, "directory or file does not exist at " + path);
   }
@@ -710,6 +755,8 @@ S3FileSystem::LocalizePath(
             S_IRUSR | S_IWUSR | S_IXUSR);
 #endif
         if (status == -1) {
+          LOG_VERBOSE(1) << "S3FileSystem::LocalizePath NOT ok 2 Failed to create local folder: " << local_fpath <<
+                  ", errno:" << strerror(errno) << std::endl;
           return Status(
               Status::Code::INTERNAL,
               "Failed to create local folder: " + local_fpath +
@@ -740,6 +787,10 @@ S3FileSystem::LocalizePath(
           output_file << retrieved_file.rdbuf();
           output_file.close();
         } else {
+          LOG_VERBOSE(1) << "S3FileSystem::LocalizePath NOT ok 3 Failed to get object at " << s3_fpath << " due to exception: " <<
+                  get_object_outcome.GetError().GetExceptionName() <<
+                  ", error message: " <<
+                  get_object_outcome.GetError().GetMessage() << std::endl;
           return Status(
               Status::Code::INTERNAL,
               "Failed to get object at " + s3_fpath + " due to exception: " +
@@ -751,6 +802,7 @@ S3FileSystem::LocalizePath(
     }
   }
 
+  LOG_VERBOSE(1) << "S3FileSystem::LocalizePath ok 1" << std::endl;
   return Status::Success;
 }
 
@@ -758,6 +810,7 @@ Status
 S3FileSystem::WriteTextFile(
     const std::string& path, const std::string& contents)
 {
+  LOG_VERBOSE(1) << "S3FileSystem::WriteTextFile NOT ok 1 - NOT IMPLEMENTED" << std::endl;
   return Status(
       Status::Code::UNSUPPORTED,
       "Write text file operation not yet implemented " + path);
@@ -767,6 +820,7 @@ Status
 S3FileSystem::WriteBinaryFile(
     const std::string& path, const char* contents, const size_t content_len)
 {
+  LOG_VERBOSE(1) << "S3FileSystem::WriteBinaryFile NOT ok 1 - NOT IMPLEMENTED" << std::endl;
   return Status(
       Status::Code::UNSUPPORTED,
       "Write text file operation not yet implemented " + path);
@@ -775,6 +829,7 @@ S3FileSystem::WriteBinaryFile(
 Status
 S3FileSystem::MakeDirectory(const std::string& dir, const bool recursive)
 {
+  LOG_VERBOSE(1) << "S3FileSystem::MakeDirectory NOT ok 1 - NOT IMPLEMENTED" << std::endl;
   return Status(
       Status::Code::UNSUPPORTED,
       "Make directory operation not yet implemented");
@@ -784,6 +839,7 @@ Status
 S3FileSystem::MakeTemporaryDirectory(
     std::string dir_path, std::string* temp_dir)
 {
+  LOG_VERBOSE(1) << "S3FileSystem::MakeTemporaryDirectory NOT ok 1 - NOT IMPLEMENTED" << std::endl;
   return Status(
       Status::Code::UNSUPPORTED,
       "Make temporary directory operation not yet implemented");
@@ -792,6 +848,7 @@ S3FileSystem::MakeTemporaryDirectory(
 Status
 S3FileSystem::DeletePath(const std::string& path)
 {
+  LOG_VERBOSE(1) << "S3FileSystem::DeletePath NOT ok 1 - NOT IMPLEMENTED" << std::endl;
   return Status(
       Status::Code::UNSUPPORTED, "Delete path operation not yet implemented");
 }

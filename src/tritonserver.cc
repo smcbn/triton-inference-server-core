@@ -49,6 +49,7 @@
 #include "triton/common/table_printer.h"
 #include "triton/common/triton_json.h"
 #include "tritonserver_apis.h"
+#include "triton/common/logging.h"
 
 // For unknown reason, windows will not export some functions declared
 // with dllexport in tritonrepoagent.h and tritonbackend.h. To get
@@ -2607,8 +2608,12 @@ TRITONAPI_DECLSPEC TRITONSERVER_Error*
 TRITONSERVER_ServerIsReady(TRITONSERVER_Server* server, bool* ready)
 {
   tc::InferenceServer* lserver = reinterpret_cast<tc::InferenceServer*>(server);
+  LOG_VERBOSE(1) << "TRITONSERVER_ServerIsReady " << std::endl;
 
-  RETURN_IF_STATUS_ERROR(lserver->IsReady(ready));
+  tc::Status status = lserver->IsReady(ready);
+  LOG_VERBOSE(1) << "TRITONSERVER_ServerIsReady ready = " << *ready << " status = " << status.StatusCode() << " Message: " << status.Message() << std::endl;
+
+  RETURN_IF_STATUS_ERROR(status);
   return nullptr;  // Success
 }
 
@@ -2619,8 +2624,11 @@ TRITONSERVER_ServerModelIsReady(
 {
   tc::InferenceServer* lserver = reinterpret_cast<tc::InferenceServer*>(server);
 
-  RETURN_IF_STATUS_ERROR(
-      lserver->ModelIsReady(model_name, model_version, ready));
+  LOG_VERBOSE(1) << "TRITONSERVER_ServerModelIsReady " << model_name << " - " << model_version << " - " << std::endl;
+  tc::Status status = lserver->ModelIsReady(model_name, model_version, ready)
+  LOG_VERBOSE(1) << "TRITONSERVER_ServerModelIsReady ready = " << *ready << " status = " << status.StatusCode() << " Message: " << status.Message() << std::endl;
+
+  RETURN_IF_STATUS_ERROR(status);
   return nullptr;  // Success
 }
 

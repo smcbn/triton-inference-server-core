@@ -29,19 +29,26 @@
 
 #include "triton/common/error.h"
 #include "tritonserver_apis.h"
+#include "triton/common/logging.h"
 
 namespace triton { namespace core {
 
 class Status : public triton::common::Error {
  public:
   // Construct a status from a code with no message.
-  explicit Status(Code code = Code::SUCCESS) : Error(code) {}
+  explicit Status(Code code = Code::SUCCESS) : Error(code) {
+    LOG_VERBOSE(1) << "Status::Status() " << code << std::endl;
+  }
 
   // Construct a status from a code and message.
-  explicit Status(Code code, const std::string& msg) : Error(code, msg) {}
+  explicit Status(Code code, const std::string& msg) : Error(code, msg) {
+    LOG_VERBOSE(1) << "Status::Status() " << code << " msg " << msg << std::endl;
+  }
 
   // Construct a status from a code and message.
-  explicit Status(const Error& error) : Error(error) {}
+  explicit Status(const Error& error) : Error(error) {
+    LOG_VERBOSE(1) << "Status::Status() " << error << error.Message() << std::endl;
+  }
 
   // Convenience "success" value. Can be used as Error::Success to
   // indicate no error.
@@ -67,6 +74,7 @@ Status CommonErrorToStatus(const triton::common::Error& error);
   do {                            \
     const Status& status__ = (S); \
     if (!status__.IsOk()) {       \
+      LOG_VERBOSE(1) << "NOT OK status__ = " << status__.StatusCode() << " msg " << status__.Message() << std::endl; \
       return status__;            \
     }                             \
   } while (false)

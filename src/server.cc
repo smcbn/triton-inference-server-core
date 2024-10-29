@@ -65,9 +65,13 @@ class ScopedAtomicIncrement {
       : counter_(counter)
   {
     counter_++;
+    LOG_VERBOSE(1) << "ScopedAtomicIncrement counter++ =" << counter_ << std::endl;
   }
 
-  ~ScopedAtomicIncrement() { counter_--; }
+  ~ScopedAtomicIncrement() { 
+    counter_--; 
+    LOG_VERBOSE(1) << "ScopedAtomicIncrement counter-- =" << counter_ << std::endl;
+    }
 
  private:
   std::atomic<uint64_t>& counter_;
@@ -410,6 +414,7 @@ Status
 InferenceServer::IsReady(bool* ready)
 {
   *ready = false;
+  LOG_VERBOSE(1) << "InferenceServer::IsReady ready_state_ = " << ready_state_ << std::endl;
 
   if (ready_state_ == ServerReadyState::SERVER_EXITING) {
     return Status(Status::Code::UNAVAILABLE, "Server exiting");
@@ -421,11 +426,14 @@ InferenceServer::IsReady(bool* ready)
   // Additionally can report ready only when all models are ready.
   *ready = (ready_state_ == ServerReadyState::SERVER_READY);
   if (*ready && strict_readiness_) {
+    LOG_VERBOSE(1) << "InferenceServer::IsReady SERVER_READY" << std::endl;
     // Strict readiness... get the model status and make sure all
     // models are ready.
     const auto model_versions = model_repository_manager_->ModelStates();
 
     for (const auto& mv : model_versions) {
+      LOG_VERBOSE(1) << "InferenceServer::IsReady checking " << mv << " first = " << mv.first << " second " << mv.second << std::endl;
+
       // If a model status is present but no version status,
       // the model is not ready as there is no proper version to be served
       if (mv.second.size() == 0) {
@@ -444,6 +452,7 @@ InferenceServer::IsReady(bool* ready)
   strict_done:;
   }
 
+  LOG_VERBOSE(1) << "InferenceServer::IsReady Success" << std::endl;
   return Status::Success;
 }
 
@@ -451,9 +460,11 @@ Status
 InferenceServer::ModelIsReady(
     const std::string& model_name, const int64_t model_version, bool* ready)
 {
+  LOG_VERBOSE(1) << "InferenceServer::ModelIsReady" << model_name << " model_version " << model_version << std::endl;
   *ready = false;
 
   if (ready_state_ != ServerReadyState::SERVER_READY) {
+    LOG_VERBOSE(1) << "InferenceServer::IsReady SERVER_READY" << std::endl;
     return Status(Status::Code::UNAVAILABLE, "Server not ready");
   }
 
