@@ -464,7 +464,7 @@ InferenceServer::ModelIsReady(
   *ready = false;
 
   if (ready_state_ != ServerReadyState::SERVER_READY) {
-    LOG_VERBOSE(1) << "InferenceServer::IsReady SERVER_READY" << std::endl;
+  LOG_VERBOSE(1) << "InferenceServer::ModelIsReady" << model_name << " model_version " << model_version << " NOT SERVER_READY"<< std::endl;
     return Status(Status::Code::UNAVAILABLE, "Server not ready");
   }
 

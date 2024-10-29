@@ -49,7 +49,6 @@
 #include "triton/common/table_printer.h"
 #include "triton/common/triton_json.h"
 #include "tritonserver_apis.h"
-#include "triton/common/logging.h"
 
 // For unknown reason, windows will not export some functions declared
 // with dllexport in tritonrepoagent.h and tritonbackend.h. To get

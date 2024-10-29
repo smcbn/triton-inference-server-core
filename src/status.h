@@ -74,7 +74,7 @@ Status CommonErrorToStatus(const triton::common::Error& error);
   do {                            \
     const Status& status__ = (S); \
     if (!status__.IsOk()) {       \
-      LOG_VERBOSE(1) << "NOT OK status__ = " << status__.StatusCode() << " msg " << status__.Message() << std::endl; \
+      LOG_VERBOSE(1) << "NOT OK status__ msg " << status__.Message() << std::endl; \
       return status__;            \
     }                             \
   } while (false)
