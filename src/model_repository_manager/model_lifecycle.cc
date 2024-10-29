@@ -371,7 +371,7 @@ ModelLifeCycle::GetModel(
       *model = vit->second->model_;
     } else {
         LOG_VERBOSE(1) << "ModelLifeCycle::GetModel UNAVAILABLE for model '"
-                 << model_id.str() << "', version " << std::to_string(model_version) << std::endl;
+                 << model_id.str() << "', version " << std::to_string(version) << std::endl;
       return Status(
           Status::Code::UNAVAILABLE, "'" + model_id.str() + "' version " +
                                          std::to_string(version) +
