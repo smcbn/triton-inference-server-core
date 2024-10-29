@@ -2610,7 +2610,7 @@ TRITONSERVER_ServerIsReady(TRITONSERVER_Server* server, bool* ready)
   LOG_VERBOSE(1) << "TRITONSERVER_ServerIsReady " << std::endl;
 
   tc::Status status = lserver->IsReady(ready);
-  LOG_VERBOSE(1) << "TRITONSERVER_ServerIsReady ready = " << *ready << " status = " << status.StatusCode() << " Message: " << status.Message() << std::endl;
+  LOG_VERBOSE(1) << "TRITONSERVER_ServerIsReady ready = " << *ready << " Message: " << status.Message() << std::endl;
 
   RETURN_IF_STATUS_ERROR(status);
   return nullptr;  // Success
@@ -2625,7 +2625,7 @@ TRITONSERVER_ServerModelIsReady(
 
   LOG_VERBOSE(1) << "TRITONSERVER_ServerModelIsReady " << model_name << " - " << model_version << " - " << std::endl;
   tc::Status status = lserver->ModelIsReady(model_name, model_version, ready)
-  LOG_VERBOSE(1) << "TRITONSERVER_ServerModelIsReady ready = " << *ready << " status = " << status.StatusCode() << " Message: " << status.Message() << std::endl;
+  LOG_VERBOSE(1) << "TRITONSERVER_ServerModelIsReady ready = " << *ready << " Message: " << status.Message() << std::endl;
 
   RETURN_IF_STATUS_ERROR(status);
   return nullptr;  // Success
