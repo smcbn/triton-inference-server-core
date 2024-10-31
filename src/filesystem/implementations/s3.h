@@ -282,7 +282,7 @@ S3FileSystem::S3FileSystem(
   // init aws api if not already
   Aws::SDKOptions options;
   options.loggingOptions.logLevel = Aws::Utils::Logging::LogLevel::Trace;
-  options.loggingOptions.logger_create_fn = [] { return std::make_shared<ConsoleLogSystem>(Aws::Utils::Logging::LogLevel::Trace); };
+  options.loggingOptions.logger_create_fn = [] { return std::make_shared<Aws::Utils::Logging::ConsoleLogSystem>(Aws::Utils::Logging::LogLevel::Trace); };
   static std::once_flag onceFlag;
   std::call_once(onceFlag, [&options] { Aws::InitAPI(options); });
 
