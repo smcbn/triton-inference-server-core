@@ -43,7 +43,7 @@
 #include "triton/common/logging.h"
 #include <memory.h>
 #include <aws/core/utils/logging/AWSLogging.h>
-#include <aws/core/utils/logging/ConsoleLogSystem.h
+#include <aws/core/utils/logging/ConsoleLogSystem.h>
 namespace triton { namespace core {
 
 namespace s3 = Aws::S3;
